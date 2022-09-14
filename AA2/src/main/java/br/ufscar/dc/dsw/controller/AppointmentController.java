@@ -152,8 +152,9 @@ public class AppointmentController {
 		appointment.setClient(getClientAutenticado());
 		if (! horarioDisponivel(appointment)) {
 			UUID uuid = UUID.randomUUID();
-			sendEmailClient(appointment, uuid);
-			sendEmailProf(appointment, uuid);
+			// email ta comentado pois esta quebrando
+			// sendEmailClient(appointment, uuid);
+			// sendEmailProf(appointment, uuid);
 			appointmentService1.salvar(appointment);
 			attr.addFlashAttribute("sucess", "Consulta agendada com sucesso");
 			return "redirect:/consultas/listarClient";

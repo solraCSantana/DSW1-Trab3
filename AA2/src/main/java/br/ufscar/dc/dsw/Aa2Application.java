@@ -42,7 +42,7 @@ public class Aa2Application {
 			professional1.setKnowledgeArea("Engenharias");
 			professional1.setQualifications(ba2);
 			professional1.setEnabled(true);
-			professional1.setFilename("teste");
+			professional1.setFilename("baixar");
 			usuarioDAO.save(professional1);
 
 			Professional professional2 = new Professional();
@@ -55,7 +55,7 @@ public class Aa2Application {
 			professional2.setExpertise("Biologia e Espaço Tridimensional");
 			professional2.setKnowledgeArea("Ciências Biológicas");
 			professional2.setEnabled(true);
-			professional2.setFilename("teste");
+			professional2.setFilename("baixar");
 			usuarioDAO.save(professional2);
 			
 			Professional professional3 = new Professional();
@@ -67,9 +67,9 @@ public class Aa2Application {
 			professional3.setEmail("profissional3@gmail.com");
 			professional3.setExpertise("Biologia Computacional");
 			professional3.setKnowledgeArea("Ciências Biológicas");
-			//professional3.setQualifications("teste");
+			//professional3.setQualifications("baixar");
 			professional3.setEnabled(true);
-			professional3.setFilename("teste");
+			professional3.setFilename("baixar");
 			usuarioDAO.save(professional3);
 
 			Professional professional4 = new Professional();
@@ -81,9 +81,9 @@ public class Aa2Application {
 			professional4.setEmail("profissional4@gmail.com");
 			professional4.setExpertise("Lingua Inglesa");
 			professional4.setKnowledgeArea("Linguística, Letras e Artes");
-			//professional4.setQualifications("teste");
+			//professional4.setQualifications("baixar");
 			professional4.setEnabled(true);
-			professional4.setFilename("teste");
+			professional4.setFilename("baixar");
 			usuarioDAO.save(professional4);
 			
 			Client client1 = new Client();

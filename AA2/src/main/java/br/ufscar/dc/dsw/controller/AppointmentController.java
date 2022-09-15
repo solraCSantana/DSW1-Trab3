@@ -1,7 +1,11 @@
 package br.ufscar.dc.dsw.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
@@ -10,11 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufscar.dc.dsw.domain.Client;
@@ -99,7 +99,7 @@ public class AppointmentController {
 		List<Appointment> appointments = appointmentService.buscarPorIdProfissional(appointment.getProfessional());
 		
 		for (int i = 0; i < appointments.size(); i++) {
-			if (appointments.get(i).getDateAppointment().equals(appointment.getDateAppointment()) && appointments.get(i).getHourAppointment() == appointment.getHourAppointment()) {
+			if (appointments.get(i).getStatusAppointment().contentEquals("Agendado") && appointments.get(i).getDateAppointment().equals(appointment.getDateAppointment()) && appointments.get(i).getHourAppointment() == appointment.getHourAppointment()) {
 				return true;
 			}
 		}
@@ -107,7 +107,7 @@ public class AppointmentController {
 		appointments = appointmentService.buscarPorIdCliente(appointment.getClient());
 		
 		for (int i = 0; i < appointments.size(); i++) {
-			if (appointments.get(i).getDateAppointment().contentEquals(appointment.getDateAppointment()) && appointments.get(i).getHourAppointment() == appointment.getHourAppointment()) {
+			if (appointments.get(i).getStatusAppointment().contentEquals("Agendado") && appointments.get(i).getDateAppointment().contentEquals(appointment.getDateAppointment()) && appointments.get(i).getHourAppointment() == appointment.getHourAppointment()) {
 				return true;
 			}
 		}
@@ -143,16 +143,16 @@ public class AppointmentController {
 	
 	@PostMapping("/salvar")
 	public String salvar(@Valid Appointment appointment, BindingResult result, RedirectAttributes attr, Long idProfessional) {
-		/*if (result.hasErrors()) {
-			System.out.print("PASSEI AKI UASDFHAFSDHUFASDUHFASDUHASFDUHAS\n");
-			return "/";
-		}*/
+		if (appointment.getDateAppointment() == "") {
+			attr.addFlashAttribute("fail", "Não foi possível agendar a consulta.");
+			return "redirect:/professionals/listar";
+		}
 		Professional professional = professionalService.buscarPorId(idProfessional);
 		appointment.setProfessional(professional);
 		appointment.setClient(getClientAutenticado());
+		appointment.setStatusAppointment("Agendado");
 		if (! horarioDisponivel(appointment)) {
 			UUID uuid = UUID.randomUUID();
-			// email ta comentado pois esta quebrando
 			// sendEmailClient(appointment, uuid);
 			// sendEmailProf(appointment, uuid);
 			appointmentService1.salvar(appointment);
@@ -163,5 +163,34 @@ public class AppointmentController {
 			return "redirect:/professionals/listar";
 		}
 
+	}
+
+	@GetMapping("/cancelar/{id}")
+	public String cancelar(@PathVariable("id") Long id, RedirectAttributes attr, ModelMap model) {
+		var appointment =  appointmentService1.buscarPorId(id);
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		try {
+			Date dataDaConsulta = sdf.parse(appointment.getDateAppointment());
+			String dateInString =new SimpleDateFormat(pattern).format(new Date());
+			Date hoje = sdf.parse(dateInString);
+
+			long elapsedms = dataDaConsulta.getTime() - hoje.getTime();
+			long diff = TimeUnit.MINUTES.convert(elapsedms, TimeUnit.MILLISECONDS);
+
+			if (diff <= 4320) {
+				attr.addFlashAttribute("fail", "Não foi possível cancelar a consulta.");
+				return "redirect:/consultas/listarClient";
+			}
+
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		appointment.setStatusAppointment("Cancelado");
+		appointmentService1.salvar(appointment);
+
+		return "redirect:/consultas/listarClient";
 	}
 }

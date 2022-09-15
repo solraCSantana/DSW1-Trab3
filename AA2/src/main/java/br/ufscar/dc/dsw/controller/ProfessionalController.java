@@ -7,6 +7,7 @@ import java.util.HashSet;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -72,9 +73,13 @@ public class ProfessionalController {
 		return "lista_profissionais";
 	}
 
-    @PostMapping("/salvar")// Salva o profissional no banco em todas as devidas tabelas
+    @PostMapping("/salvar")
 	public String salvar(@Valid Professional professional, BindingResult result, RedirectAttributes attr, BCryptPasswordEncoder encoder, @RequestParam("file") MultipartFile file) throws IOException {
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		if (fileName == "") {
+			attr.addFlashAttribute("fail", "Nao foi possivel cadastrar, verifique os dados e tente novamente");
+			return "redirect:/professionals/listar";
+		}
 		professional.setQualifications(file.getBytes());
 		professional.setFilename(fileName);
 
@@ -82,55 +87,59 @@ public class ProfessionalController {
 			professional.setRole("PROF");
 		}
 
-		/*if (result.hasErrors()) {
-			System.out.print("cheguei aqui");
-			return "profissional/cadastro";
-		}*/
-
 		professional.setPassword(encoder.encode(professional.getPassword()));
-		userService.salvar(professional);
-		attr.addFlashAttribute("sucess", "Profissional inserido com sucesso");
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			userService.salvar(professional);
+			attr.addFlashAttribute("sucess", "Profissional inserido com sucesso");
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if(!authentication.getAuthorities().toString().equals("[ROLE_ANONYMOUS]")){
-			UsuarioDetails user = (UsuarioDetails)authentication.getPrincipal();
-			String role = user.getAuthorities().toString();
-				
-			if(role.equals("[ADMIN]")){
-				
-				return "redirect:/professionals/listar";
+			if(!authentication.getAuthorities().toString().equals("[ROLE_ANONYMOUS]")){
+				UsuarioDetails user = (UsuarioDetails)authentication.getPrincipal();
+				String role = user.getAuthorities().toString();
+
+				if(role.equals("[ADMIN]")){
+
+					return "redirect:/professionals/listar";
+				}
 			}
+
+			return "/login";
+
+		}
+		catch (Exception handlerException) {
+			attr.addFlashAttribute("fail", "Nao foi possivel cadastrar, verifique os dados e tente novamente");
+			return "redirect:/professionals/listar";
 		}
 
-		
-		
-		return "/login";
 	}
 
-    @GetMapping("/editar/{id}") // Recupera o profissional e os atributos dele. Usado pelo admin
+    @GetMapping("/editar/{id}")
 	public String preEditar(@PathVariable("id") Long id, ModelMap model) {
 		model.addAttribute("professional", userService.buscarPorId(id));
 		return "profissional/edicao";
 	}
 
-    @PostMapping("/editar") // Edita um profissional. Usado pelo admin
+    @PostMapping("/editar")
 	public String editar(@Valid Professional professional, BindingResult result, RedirectAttributes attr,BCryptPasswordEncoder encoder, @RequestParam("file") MultipartFile file) throws IOException {
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		professional.setQualifications(file.getBytes());
-		professional.setFilename(fileName);
+		try {
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			professional.setQualifications(file.getBytes());
+			professional.setFilename(fileName);
 
-		if (professional.getRole() == null) {
-			professional.setRole("PROF");
+			if (professional.getRole() == null) {
+				professional.setRole("PROF");
+			}
+
+
+			professional.setPassword(encoder.encode(professional.getPassword()));
+			userService.salvar(professional);
+			attr.addFlashAttribute("sucess", "Profissional editado com sucesso.");
+			return "redirect:/professionals/listar";
 		}
-
-		/*if (result.hasErrors()) {
-			return "profissional/edicao";
-		}*/
-
-		professional.setPassword(encoder.encode(professional.getPassword()));
-		userService.salvar(professional);
-		attr.addFlashAttribute("sucess", "Profissional editado com sucesso.");
-		return "redirect:/professionals/listar";
+		catch (Exception handlerException) {
+			attr.addFlashAttribute("fail", "Nao foi possivel editar, verifique os dados e tente novamente");
+			return "redirect:/professionals/listar";
+		}
 	}
 
     @GetMapping("/excluir/{id}")
@@ -148,9 +157,7 @@ public class ProfessionalController {
 
 		// set content type
 		response.setContentType("application/pdf");
-		
-		// add response header (caso queira forçar o download)
-		//response.addHeader("Content-Disposition", "attachment; filename=" + professional.getName());
+
 		try {
 			// copies all bytes to an output stream
 			response.getOutputStream().write(professional.getQualifications());

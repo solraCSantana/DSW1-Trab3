@@ -54,28 +54,36 @@ public class ClientController {
 			client.setRole("CLIENT");
 		}
 
-		if (result.hasErrors()) {
-			return "cliente/cadastro";
+		if (result.hasErrors() || client.getName() == "" || client.getUsername() == "") {
+			attr.addFlashAttribute("fail", "Nao foi possivel cadastrar, verifique os dados e tente novamente");
+			return "redirect:/clientes/listar";
 		}
-		
-		client.setPassword(encoder.encode(client.getPassword()));
-		userService.salvar(client);
-		attr.addFlashAttribute("sucess", "Cliente inserido com sucesso.");
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		try {
 
-		if(!authentication.getAuthorities().toString().equals("[ROLE_ANONYMOUS]")){
-			UsuarioDetails user = (UsuarioDetails)authentication.getPrincipal();
-			String role = user.getAuthorities().toString();
-				
-			if(role.equals("[ADMIN]")){
+			client.setPassword(encoder.encode(client.getPassword()));
+			userService.salvar(client);
+			attr.addFlashAttribute("sucess", "Cliente inserido com sucesso.");
 
-				return "redirect:/clientes/listar";
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+			if (!authentication.getAuthorities().toString().equals("[ROLE_ANONYMOUS]")) {
+				UsuarioDetails user = (UsuarioDetails) authentication.getPrincipal();
+				String role = user.getAuthorities().toString();
+
+				if (role.equals("[ADMIN]")) {
+
+					return "redirect:/clientes/listar";
+				}
 			}
-		}
-		
 
-		return "/login";
+
+			return "/login";
+		}
+		catch (Exception handlerException) {
+			attr.addFlashAttribute("fail", "Nao foi possivel cadastrar, verifique os dados e tente novamente");
+			return "redirect:/clientes/listar";
+		}
 	}
 	
 	@PostMapping("/editar")
@@ -83,15 +91,22 @@ public class ClientController {
 		if (client.getRole() == null) {
 			client.setRole("CLIENT");
 		}
-		
-		if (result.hasErrors()) {
-			return "cliente/edicao";
+
+		if (result.hasErrors() || client.getName() == "" || client.getUsername() == "") {
+			attr.addFlashAttribute("fail", "Nao foi possivel editar, verifique os dados e tente novamente");
+			return "redirect:/clientes/listar";
 		}
-		
-		client.setPassword(encoder.encode(client.getPassword()));
-		userService.salvar(client);
-		attr.addFlashAttribute("sucess", "Cliente editado com sucesso.");
-		return "redirect:/clientes/listar";
+
+		try {
+			client.setPassword(encoder.encode(client.getPassword()));
+			userService.salvar(client);
+			attr.addFlashAttribute("sucess", "Cliente editado com sucesso.");
+			return "redirect:/clientes/listar";
+		}
+		catch (Exception handlerException) {
+			attr.addFlashAttribute("fail", "Nao foi possivel editar, verifique os dados e tente novamente");
+			return "redirect:/clientes/listar";
+		}
 	}
 	
 	@GetMapping("/editar/{id}")

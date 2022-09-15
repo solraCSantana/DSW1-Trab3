@@ -18,6 +18,9 @@ public class User extends AbstractEntity<Long> {
 
 	@Column(nullable = false, length = 45)
     private String username;
+
+	@Column(nullable = false, length = 60)
+	private String email;
  
     @Column(nullable = false, length = 45)
     private String name;
@@ -47,7 +50,8 @@ public class User extends AbstractEntity<Long> {
 		this.name = name;
 	}
 
-
+	public String getEmail() {return email; }
+	public void setEmail(String email) {this.email = email; }
 	
 	public String getPassword() {
 		return password;

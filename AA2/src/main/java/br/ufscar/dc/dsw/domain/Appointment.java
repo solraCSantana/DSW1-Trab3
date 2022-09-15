@@ -25,9 +25,14 @@ public class Appointment extends AbstractEntity<Long> {
 	@Size(min = 8, max = 12)
 	@Column(nullable = false, unique = false, length = 60)
 	private String dateAppointment;
-    
+
 	@Column(nullable = false, unique = false)
 	private int hourAppointment;
+
+	@NotBlank
+	@Size(min = 1, max = 12)
+	@Column(nullable = false, unique = false, length = 60)
+	private String statusAppointment;
 
     public Client getClient() {
 		return client;
@@ -59,5 +64,13 @@ public class Appointment extends AbstractEntity<Long> {
 
 	public void setHourAppointment(int hour) {
 		this.hourAppointment = hour;
+	}
+
+	public String getStatusAppointment() {
+		return statusAppointment;
+	}
+
+	public void setStatusAppointment(String status) {
+		this.statusAppointment = status;
 	}
 }

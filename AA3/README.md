@@ -1,4 +1,4 @@
-# Atividade AA-2: Sistema para agendamento de consultas *online* com profissionais
+# Atividade AA-3: Sistema para agendamento de consultas *online* com profissionais
 Corresponde ao requisito C2.
 
 ## Arquitetura: Modelo-Visão-Controlador

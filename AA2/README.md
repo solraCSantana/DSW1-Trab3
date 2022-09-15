@@ -12,6 +12,10 @@ Corresponde ao requisito C2.
 mysql -uroot -p
 source db/MySQL/create.sql;
 ```
+## Informaçoes do banco de dados
+* usuario: root
+* senha: Roo1T#
+
 
 ## Compilação
 ```

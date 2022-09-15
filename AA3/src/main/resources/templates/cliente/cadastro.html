@@ -1,0 +1,80 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+
+<head>
+	<title th:text="#{client.register}"></title>
+	<link rel="stylesheet" th:href="@{/css/cadastroCliente.css}" />
+</head>
+
+<body>
+	<header>
+		<h1 th:text="#{client.register}"></h1>
+	</header>
+
+	<div class="container">
+		<div class="content">
+			<form class="content-form" th:action="@{/clientes/salvar}" th:object="${client}" method="POST">
+				<div style="display: flex;">
+					<div>
+						<label th:text="#{nome.text}"></label><br>
+						<input class="input" type="text" name="nome" th:placeholder="#{nome.text}" th:field="*{name}"
+							th:classappend="${#fields.hasErrors('name')} ? is-invalid" />
+					</div>
+
+					<div>
+						<label th:text="#{user.label}"></label><br>
+						<input class="input" type="text" name="username" th:placeholder="#{user.label}"
+							th:field="*{username}" th:classappend="${#fields.hasErrors('username')} ? is-invalid" />
+					</div>
+
+					<div>
+						<label th:text="#{cpf.text}"></label><br>
+						<input class="input" type="text" name="cpf" th:placeholder="#{cpf.text}" th:field="*{cpf}"
+							th:classappend="${#fields.hasErrors('cpf')} ? is-invalid" />
+					</div>
+
+				</div>
+				<div style="display: flex;">
+					<div>
+						<label th:text="#{email.text}"></label><br>
+						<input class="input" type="text" name="email" th:placeholder="#{email.text}" th:field="*{email}"
+							th:classappend="${#fields.hasErrors('email')} ? is-invalid" />
+					</div>
+
+					<div>
+						<label th:text="#{senha.label}"></label><br>
+						<input class="input" type="password" name="senha" th:placeholder="#{senha.label}"
+							th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? is-invalid" />
+					</div>
+
+					<div>
+						<label th:text="#{telephone.label}"></label><br>
+						<input class="input" type="text" name="telephone" th:placeholder="#{telephone.label}"
+							th:field="*{telephone}" th:classappend="${#fields.hasErrors('telephone')} ? is-invalid" />
+					</div>
+
+				</div>
+				<div style="display: flex;">
+					<div>
+						<label th:text="#{gender.label}"></label><br>
+						<input class="input" type="text" name="gender" th:placeholder="#{gender.label}"
+							th:field="*{gender}" th:classappend="${#fields.hasErrors('gender')} ? is-invalid" />
+					</div>
+
+					<div>
+						<label th:text="#{birthdate.label}"></label><br>
+						<input class="input" type="text" name="birthdate" th:placeholder="#{birthdate.label}"
+							th:field="*{birthDate}" th:classappend="${#fields.hasErrors('birthDate')} ? is-invalid" />
+					</div>
+				</div>
+
+				<input type="submit" class="btn" th:value="#{submit.text}" />
+			</form>
+		</div>
+	</div>
+	<a class="home" th:href="@{/}"> &laquo; Home</a>
+</body>
+
+</html>

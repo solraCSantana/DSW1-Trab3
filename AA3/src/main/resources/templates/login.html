@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Login</title>
+	<link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+
+<body>
+	<header>
+		<div class="header-content">
+			<a class="home" th:href="@{/}"> &laquo; Home</a>
+			<h1>Login</h1>
+		</div>
+	</header>
+
+	<div style="margin-top: 100px;">
+		<div align="center" th:if="${param.error}">
+			<span style="color:red" th:text="#{login.error}"></span>
+		</div>
+
+		<form th:action="@{/login}" method="post">
+			<div class="container">
+				<div class="content">
+					<div class="">
+						<label class="margin" for="username" th:text="#{user.label}"></label><br><input type="text"
+							id="username" name="username" class="input" autofocus="autofocus"><br>
+						<label class="margin" for="senha" th:text="#{senha.label}"></label><br><input type="password"
+							id="password" name="password" class="input"><br><br>
+					</div>
+					<div style="text-align: center;">
+						<div>
+							<input type="submit" name="login-submit" id="login-submit" class="btn">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+</body>
+
+</html>

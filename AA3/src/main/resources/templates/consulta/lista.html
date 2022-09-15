@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+
+<head>
+    <title th:text="#{appointment_text}"></title>
+    <link rel="stylesheet" th:href="@{/css/consulta.css}" />
+</head>
+
+<body>
+    <div align="center">
+        <header>
+            <h1 th:text="#{appointment_text}" style="border:width"></h1>
+        </header>
+        <div class="content">
+            <div align="center" th:if="${fail} != null">
+                <span> <strong style="color: red;" th:text="${fail}"></strong> </span>
+            </div>
+            <table id="customers" class="">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th th:text="#{appointment.hour}"></th>
+                        <th th:text="#{appointment.date}"></th>
+                        <th th:text="#{prof.label}"></th>
+                        <th th:text="#{client.label}"></th>
+                        <th>status</th>
+                        <th th:text="#{appointment.acao}"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="consulta : ${consultas}">
+                        <td th:text="${consulta.id}"></td>
+                        <td th:text="${consulta.hourAppointment} + ':00'"></td>
+                        <td th:text="${consulta.dateAppointment}"></td>
+                        <td th:text="${consulta.professional.name}"></td>
+                        <td th:text="${consulta.client.name}"></td>
+                        <td th:text="${consulta.statusAppointment}"></td>
+                        <td>
+                            <a class="" th:text="#{cancel_text}"
+                                th:href="@{/consultas/cancelar/{id} (id=${consulta.id}) }">
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <a class="home" th:href="@{/}"> &laquo; Home</a>
+</body>
+
+</html>
